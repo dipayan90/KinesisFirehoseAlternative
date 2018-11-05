@@ -1,0 +1,59 @@
+#variables:
+#  MAVEN_OPTS: "-Xmx256m -XX:MaxPermSize=512m"
+#  MAVEN_CLI_OPTS: "--batch-mode --errors --show-version"
+#  KUBERNETES_NAMESPACE_OVERWRITE: cdp
+#  KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: gitlab-runner
+#
+#stages:
+#  - package
+#  - deploy
+#
+#packageJar:
+#  stage: package
+#  allow_failure: false
+#  image: 004323233598.dkr.ecr.us-west-2.amazonaws.com/prod-maven:1
+#  tags:
+#    - AWS
+#  script:
+#    - mvn clean install $MAVEN_CLI_OPTS
+#  artifacts:
+#    expire_in: 1 hour
+#    paths:
+#      - data-to-parquet/target/*.jar
+#
+#copyToS3_nonprod:
+#  stage: deploy
+#  image: 004323233598.dkr.ecr.us-west-2.amazonaws.com/prod-awscli:1
+#  dependencies:
+#    - packageJar
+#  except:
+#    - master
+#  script:
+#    - aws s3 rm s3://cdp-deployment/nonprod/spark/data-to-parquet/ --recursive
+#    - aws s3 rm s3://cdp-deployment/nonprod/product-data-preprocess/ --recursive
+#    - set +o histexpand
+#    - aws s3 cp ./data-to-parquet/target/ s3://cdp-deployment/nonprod/spark/data-to-parquet/ --recursive --exclude "original-*" --acl authenticated-read
+#    - aws s3 cp ./productdatapreprocessor/target/ s3://cdp-deployment/nonprod/product-data-preprocess/ --recursive --exclude "original-*" --acl authenticated-read
+#  tags:
+#    - AWS
+#  variables:
+#    KUBERNETES_POD_ANNOTATIONS_1: kube2iam.beta.nordstrom.net/role=arn:aws:iam::640598048906:role/cdp/k8s/gitlab-cdp-deployment-put
+#
+#
+#copyToS3_prod:
+#  stage: deploy
+#  image: 004323233598.dkr.ecr.us-west-2.amazonaws.com/prod-awscli:1
+#  dependencies:
+#    - packageJar
+#  only:
+#    - master
+#  script:
+#    - aws s3 rm s3://cdp-deployment/prod/spark/data-to-parquet  --recursive
+#    - aws s3 rm s3://cdp-deployment/prod/product-data-preprocess/ --recursive
+#    - set +o histexpand
+#    - aws s3 cp ./data-to-parquet/target/ s3://cdp-deployment/prod/spark/data-to-parquet/ --recursive --exclude "original-*" --acl authenticated-read
+#    - aws s3 cp ./productdatapreprocessor/target/ s3://cdp-deployment/prod/product-data-preprocess/ --recursive --exclude "original-*" --acl authenticated-read
+#  tags:
+#    - AWS
+#  variables:
+#    KUBERNETES_POD_ANNOTATIONS_1: kube2iam.beta.nordstrom.net/role=arn:aws:iam::640598048906:role/cdp/k8s/gitlab-cdp-deployment-put

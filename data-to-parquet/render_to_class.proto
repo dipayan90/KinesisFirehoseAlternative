@@ -1,0 +1,35 @@
+
+syntax = "proto3";
+
+package com.nordstrom.ds;
+
+option java_package = "com.nordstrom.ds";
+
+message RenderedClass {
+
+    /*
+    Authorization
+    */
+    string authorization = 1;
+
+    /*
+    Environment Name.
+    */
+    string environmentName = 2;
+
+    /*
+    Timestamp
+    */
+    string timeStamp = 3;
+
+    /*
+    Availability.
+    */
+    bool available = 4;
+
+    /*
+    Price.
+    */
+    float price = 5;
+
+}
