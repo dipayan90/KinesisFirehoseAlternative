@@ -12,11 +12,12 @@ spark-submit \
      --conf spark.shuffle.memoryFraction=0.5 \
      --conf spark.executor.extraJavaOptions="-XX:+UseG1GC -Denvironment=prod -Dappname=kinesisToParquet" \
      --conf spark.repartition.trigger=false \
-     --conf spark.kinesis.stream.name="query-logs" \
-     --conf spark.kinesis.assume.role.arn="arn:aws:iam::004323233598:role/nonprod-sts-kinesis-s3-prod" \
+     --conf spark.kinesis.stream.name="kinesis-stream-name" \
+     --conf spark.kinesis.assume.role.arn="arn:aws:iam::0043xxxxxxxx:role/sts-kinesis-s3-prod" \
+     --conf spark.input.record.sample="{'authorization' : '', 'host' : '['abc', 'def']'}" \
      --conf spark.batch.interval.time.in.minutes="5" \
      --conf spark.repartition.multiplier=1 \
-     --conf spark.output.path=s3a://cdp-ml-dev/ql \
+     --conf spark.output.path=s3a://bucket-name/bucket-prefix \
      --conf spark.output.delete.previous.trigger=true \
      --class com.kajjoy.ds.App \
     ./data-to-parquet-1.0.0.jar
