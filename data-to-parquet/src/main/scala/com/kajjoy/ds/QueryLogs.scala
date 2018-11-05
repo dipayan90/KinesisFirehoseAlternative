@@ -1,4 +1,4 @@
-package com.nordstrom.ds
+package com.kajjoy.ds
 
 case class QueryLogs(
       authorization: String,

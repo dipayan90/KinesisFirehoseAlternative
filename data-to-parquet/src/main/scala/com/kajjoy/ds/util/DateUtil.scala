@@ -1,4 +1,4 @@
-package com.nordstrom.ds.util
+package com.kajjoy.ds.util
 
 import java.util.{Calendar, Date}
 

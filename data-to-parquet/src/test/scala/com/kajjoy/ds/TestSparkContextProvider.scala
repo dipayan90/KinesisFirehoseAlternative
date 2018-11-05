@@ -1,4 +1,4 @@
-package com.nordstrom.ds
+package com.kajjoy.ds
 
 import org.apache.spark.sql.SparkSession
 

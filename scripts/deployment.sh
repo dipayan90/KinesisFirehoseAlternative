@@ -18,5 +18,5 @@ spark-submit \
      --conf spark.repartition.multiplier=1 \
      --conf spark.output.path=s3a://cdp-ml-dev/ql \
      --conf spark.output.delete.previous.trigger=true \
-     --class com.nordstrom.ds.App \
+     --class com.kajjoy.ds.App \
     ./data-to-parquet-1.0.0.jar

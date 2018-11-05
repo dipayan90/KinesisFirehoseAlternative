@@ -1,4 +1,4 @@
-package com.nordstrom.ds
+package com.kajjoy.ds
 
 import com.amazonaws.regions.Regions
 import org.apache.spark.sql.{DataFrame, SparkSession}

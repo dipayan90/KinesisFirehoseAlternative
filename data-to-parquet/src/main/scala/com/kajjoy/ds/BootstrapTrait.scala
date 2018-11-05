@@ -1,9 +1,9 @@
-package com.nordstrom.ds
+package com.kajjoy.ds
 
 import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClientBuilder}
-import com.nordstrom.ds.util.DateUtil
+import com.kajjoy.ds.util.DateUtil
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
