@@ -1,5 +1,36 @@
 # Kinesis Stream Data To Parquet
 
+## What is it ?
+
+This application allows you to just configure an incoming kinesis stream,
+and convert the incoming data into the format you like. Not just that
+it enables you to buffer data up up to a configurable timeframe and write it out.
+
+Features:
+
+* Configure kinesis stream.
+* Support for STS Assume role for kinesis stream ( Incase EMR cluster is on a different
+ AWS account as the stream )
+* Supports  custom transformation using input schema definitions.
+* Supports following input data types:
+  - json
+  - parquet
+* Customizable buffer size based off buffer time interval.
+* Supports following output types:
+    - parquet
+    - json
+
+## Configuration
+
+| Config Name                                        | Possible Values                                                                                                                                                | Data Type              |
+|----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
+| spark.kinesis.stream.name                          | Name of the kinesis stream                                                                                                                                     | String                 |
+| spark.kinesis.assume.role.arn                      | Kinesis Stream Assume role arn. Eg: "Resource": arn:aws:kinesis:*:111122223333:stream/my-stream                                                                | String                 |
+| spark.aws.region                                   | Your AWS Region                                                                                                                                                | String                 |
+| spark.input.record.sample                          | A JSON that describes the schema of the input records in the kinesis stream. Example: "{'authorization' : '', 'host' : '['abc', 'def']'}"                      | String                 |
+| spark.batch.interval.time.in.minutes               | Provide the buffer interval in minutes.                                                                                                                        | String                 |
+| spark.output.path                                  | Path where the buffered data needs to be written. Eg: s3a://bucket-name/bucket/prefix/filename                                                                 | String                 |
+
 
 ## Building the application
 
@@ -12,28 +43,8 @@ mvn clean install
 * Remove all provided scopes from the child pom to include required dependencies
 * java -Denvironment=local -jar data-to-parquet/target/data-to-parquet-1.0.0.jar
 
-### EMR
+### Production
 
-* Create Amazon EMR with EMR role and  EC2 instance profile role. Make sure you give appropriate permissions to these roles
-
-* SSH using the key:
-
-ssh -i ~/key hadoop@ip 
-
-* Change spark-configuration: 
-
-vi /usr/lib/spark/conf/spark-defaults.conf 
-
-* add: 
-
-spark.yarn.submit.waitAppCompletion   false
-
-* Run Spark EMR Job:
-
-[Deploying on EMR](scripts/deployment.sh)
-
-#### Note: The jar file that you build should be uploaded to S3 first, and the emr/ec2s should have access to S3.
-
-## Purpose
-
-Queries s3 buckets, merge data attributes, create a view and write to another s3 bucket
+* If running on EMR all the AWS depdencies should already be available
+on the master node. So, you could just use as is. For how to deploy this application
+on EMR look at [deployment.sh](scripts/deployment.sh)
