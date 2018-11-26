@@ -30,6 +30,8 @@ Features:
 | spark.input.record.sample                          | A JSON that describes the schema of the input records in the kinesis stream. Example: "{'authorization' : '', 'host' : '['abc', 'def']'}"                      | String                 |
 | spark.batch.interval.time.in.minutes               | Provide the buffer interval in minutes.                                                                                                                        | String                 |
 | spark.output.path                                  | Path where the buffered data needs to be written. Eg: s3a://bucket-name/bucket/prefix/filename                                                                 | String                 |
+| spark.input.record.format                          | Input data format for the stream can be either JSON or CSV                                                                                                     | String                 |
+| spark.output.record.format                         | Format in which data will be written out to the file. Can be either PARQUET or JSON or CSV                                                                     | String                 |
 
 
 ## Building the application
