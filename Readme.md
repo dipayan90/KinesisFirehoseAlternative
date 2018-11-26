@@ -14,11 +14,12 @@ Features:
 * Supports  custom transformation using input schema definitions.
 * Supports following input data types:
   - json
-  - parquet
+  - csv
 * Customizable buffer size based off buffer time interval.
 * Supports following output types:
     - parquet
     - json
+    - csv
 
 ## Configuration
 
