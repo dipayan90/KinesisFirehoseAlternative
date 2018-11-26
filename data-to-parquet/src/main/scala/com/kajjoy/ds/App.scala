@@ -66,8 +66,8 @@ object App extends BootstrapTrait with HelperTrait {
     unionStreams.repartition(10)
     unionStreams.foreachRDD((rdd: RDD[Array[Byte]], time: Time) => {
       if (!rdd.isEmpty()) {
-        val df : DataFrame =convertByteArrayToDataFrame(rdd, schema)
-        writeToParquet(df)
+        val df : DataFrame =convertByteArrayToDataFrame(rdd, schema, inputDataFormat)
+        writeDataToFile(df, outputDataFormat, outputPath)
       }
     })
 

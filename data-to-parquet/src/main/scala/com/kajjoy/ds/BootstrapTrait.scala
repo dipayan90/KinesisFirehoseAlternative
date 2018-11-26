@@ -3,10 +3,8 @@ package com.kajjoy.ds
 import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.kinesis.{AmazonKinesis, AmazonKinesisClientBuilder}
-import com.kajjoy.ds.util.DateUtil
 import org.apache.commons.lang3.RandomStringUtils
-import org.apache.spark.sql.functions.lit
-import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.kinesis.SparkAWSCredentials
 
 trait BootstrapTrait {
@@ -17,9 +15,8 @@ trait BootstrapTrait {
   var region : String = _
   var timeIntervalInMinutes : Int = 5
   var assumeRoleArn : String = _
-  val YEAR_COL_NAME = "year"
-  val MONTH_COL_NAME = "month"
-  val DAY_COL_NAME = "day"
+  var inputDataFormat : DataFormat.Value = _
+  var outputDataFormat : DataFormat.Value = _
   var sampleRecord : String = _
 
   def initializeSpark(deploymentEnvironment: String): SparkSession = {
@@ -54,6 +51,9 @@ trait BootstrapTrait {
     assumeRoleArn = spark.conf.get("spark.kinesis.assume.role.arn")
     region = spark.conf.get("spark.aws.region")
     sampleRecord = spark.conf.get("spark.input.record.sample")
+    inputDataFormat = getDataFormat(spark.conf.get("spark.input.record.format"))
+    outputDataFormat = getDataFormat(spark.conf.get("spark.output.record.format"))
+
     try {
       timeIntervalInMinutes = spark.conf.get("spark.batch.interval.time.in.minutes").toInt
     } catch {
@@ -61,7 +61,8 @@ trait BootstrapTrait {
     }
 
     println(s"Loaded properties are:  s3OutputPath= $outputPath, kinesisStreamName= $kinesisStreamName, applicationName = $applicationName" +
-      s", assumeRoleArn = $assumeRoleArn, timeIntervalInMinutes = $timeIntervalInMinutes, region= $region, sampleRecord= $sampleRecord")
+      s", assumeRoleArn = $assumeRoleArn, timeIntervalInMinutes = $timeIntervalInMinutes, region= $region, sampleRecord= $sampleRecord, " +
+      s"inputDataFormat = $inputDataFormat, outputDataFormat = $outputDataFormat")
   }
 
   private def setSparkProperties(sc: SparkSession): Unit = {
@@ -110,17 +111,13 @@ trait BootstrapTrait {
     amazonKinesisClient.describeStream(streamName).getStreamDescription.getShards.size
   }
 
-  def writeToParquet(df: DataFrame) : Unit = {
-    df
-      .withColumn(YEAR_COL_NAME, lit(DateUtil.getYear()))
-      .withColumn(MONTH_COL_NAME, lit(DateUtil.getMonth()))
-      .withColumn(DAY_COL_NAME, lit(DateUtil.getDayOfTheMonth()))
-      .write
-      .option("mapreduce.fileoutputcommitter.algorithm.version", "2")
-      .option("compression", "snappy")
-      .mode(SaveMode.Append)
-      .partitionBy(YEAR_COL_NAME, MONTH_COL_NAME, DAY_COL_NAME)
-      .parquet(outputPath)
+  def getDataFormat(formatString : String) : DataFormat.Value = {
+    formatString match {
+      case u if u.equals(DataFormat.JSON.toString) => DataFormat.JSON
+      case u if u.equals(DataFormat.PARQUET.toString) => DataFormat.PARQUET
+      case u if u.equals(DataFormat.CSV.toString) => DataFormat.CSV
+      case _ => throw new IllegalArgumentException("Only JSON | PARQUET | CSV formats are supported. No other formats are supported yet.")
+    }
   }
 
 }

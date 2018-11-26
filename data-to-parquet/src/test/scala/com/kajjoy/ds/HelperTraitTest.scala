@@ -18,7 +18,7 @@ class HelperTraitTest extends TestSparkContextProvider {
 
     object TestApp extends HelperTrait
     val tableSchema : StructType = spark.read.json(Seq("""{"authorization" : ""}""".stripMargin).toDS()).schema
-    val df: DataFrame = TestApp.convertByteArrayToDataFrame(data, tableSchema)
+    val df: DataFrame = TestApp.convertByteArrayToDataFrame(data, tableSchema, DataFormat.JSON)
     df.show(false)
   }
 
