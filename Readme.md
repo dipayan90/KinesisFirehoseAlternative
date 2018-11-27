@@ -1,4 +1,4 @@
-# Kinesis Stream Data To Parquet
+# Data in AWS kinesis stream buffered and converted to format of choice.
 
 ## What is it ?
 
